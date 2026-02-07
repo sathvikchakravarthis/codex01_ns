@@ -1,0 +1,98 @@
+bot:
+  name: btc_spot_standard_bot
+  mode: live
+  exchange: binance_spot   # change as needed
+  trading_pair: BTC/USDT
+  timeframe:
+    primary: 15m
+    higher: 1h
+  allow_short: false
+
+capital:
+  base_currency: USDT
+  initial_balance: 10000
+  max_concurrent_trades: 1
+
+risk_management:
+  risk_per_trade_percent: 1.0
+  max_daily_drawdown_percent: 3.0
+  max_total_drawdown_percent: 10.0
+  cooldown_after_loss_minutes: 30
+  min_rr_ratio: 2.0
+
+position_sizing:
+  method: risk_based
+  atr_multiplier: 1.5
+  fee_buffer_percent: 0.1
+  slippage_buffer_percent: 0.05
+
+indicators:
+  ema:
+    fast: 20
+    slow: 50
+    trend_filter: 200
+  rsi:
+    period: 14
+    overbought: 70
+    oversold: 30
+  macd:
+    fast: 12
+    slow: 26
+    signal: 9
+  atr:
+    period: 14
+  volume:
+    ma_period: 20
+    spike_multiplier: 1.5
+
+entry_rules:
+  long:
+    trend_confirmation: true
+    momentum_confirmation: true
+    volume_confirmation: true
+    rsi_min: 40
+    rsi_max: 65
+  avoid_entries_during:
+    low_volume: true
+    high_spread: true
+    major_news: true
+
+exit_rules:
+  stop_loss:
+    type: atr
+    atr_multiplier: 1.5
+  take_profit:
+    type: rr_ratio
+    rr_ratio: 2.5
+  trailing_stop:
+    enabled: true
+    activation_rr: 1.5
+    trail_atr_multiplier: 1.0
+  partial_take_profit:
+    enabled: true
+    levels:
+      - rr: 1.5
+        percent: 50
+
+execution:
+  order_type_preference:
+    entry: limit
+    exit: market
+  time_in_force: GTC
+  max_slippage_percent: 0.2
+
+safety:
+  pause_on_api_errors: true
+  pause_on_data_gaps: true
+  volatility_halt_atr_percentile: 95
+
+logging:
+  level: INFO
+  log_trades: true
+  log_indicators: true
+  log_to_file: true
+  log_path: ./logs/btc_bot.log
+
+backtesting:
+  enabled: false
+  warmup_candles: 300
